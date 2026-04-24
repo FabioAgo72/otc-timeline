@@ -1,0 +1,937 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:transparent;font-size:12px;color:#1a1a1a;}
+.wrap{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e8e0f0;padding-bottom:24px;}
+.hdr{background:linear-gradient(135deg,#1A0033 0%,#3D0080 55%,#A100FF 100%);padding:20px 24px 14px;position:relative;}
+.hdr::after{content:'';position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:rgba(161,0,255,.15);pointer-events:none;}
+.htitle{font-size:22px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:4px;}
+.htitle b{color:#00C4CC;}
+.hsub{font-size:11px;color:rgba(255,255,255,.5);}
+.hleg{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);}
+.hl{display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.75);}
+.hldot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.body{padding:12px 14px 0;}
+.loading-overlay{position:relative;padding:20px;text-align:center;color:#5a3a8a;font-weight:600;font-size:13px;}
+.pbar{background:#F0EAFF;border:1px solid #d8c8ef;border-radius:10px;padding:9px 13px;margin-bottom:10px;}
+.pbar-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.pbar-label{font-size:11px;font-weight:700;color:#5a3a8a;}
+.pbar-current{font-size:12px;font-weight:800;color:#A100FF;}
+.pbar-btns{display:flex;gap:4px;flex-wrap:wrap;}
+.pb{padding:3px 10px;border-radius:14px;border:1px solid #d8c8ef;font-size:10px;cursor:pointer;background:#fff;color:#5a3a8a;font-weight:600;}
+.pb:hover{border-color:#A100FF;color:#A100FF;}
+.pb.on{background:#A100FF;color:#fff;border-color:#A100FF;}
+.wdstrip{display:flex;background:#fff;border:1px solid #e2d8f0;border-radius:7px;overflow:hidden;margin-bottom:9px;}
+.wdi{flex:1;text-align:center;padding:5px 2px;border-right:1px solid #f0eaff;}
+.wdi:last-child{border-right:none;}
+.wdi-lbl{font-size:8px;font-weight:700;color:#A100FF;margin-bottom:1px;}
+.wdi-lbl.gray{color:#9ca3af;}
+.wdi-date{font-size:10px;font-weight:700;color:#1A0033;}
+.wdi-day{font-size:8px;color:#9ca3af;}
+.export-bar{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap;}
+.exp-label{font-size:11px;font-weight:600;color:#5a3a8a;}
+.exp-sel{padding:4px 10px;border-radius:6px;border:1px solid #d8c8ef;font-size:10px;color:#1A0033;background:#fff;cursor:pointer;}
+.exp-btn{padding:5px 16px;border-radius:7px;border:none;background:#1A0033;color:#fff;font-size:11px;font-weight:700;cursor:pointer;}
+.exp-btn:hover{background:#3D0080;}
+.exp-btn:disabled{opacity:.45;cursor:default;}
+.exp-status{font-size:10px;font-weight:600;}
+.filts{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px;}
+.f{padding:3px 10px;border-radius:20px;border:1px solid #d8c8ef;font-size:10px;cursor:pointer;background:transparent;color:#5a3a8a;font-weight:500;}
+.f:hover{border-color:#A100FF;color:#A100FF;}
+.f.on{background:#A100FF;color:#fff;border-color:#A100FF;}
+.railbox{position:relative;height:48px;width:100%;margin-bottom:5px;}
+.railsvg{position:absolute;top:0;left:0;width:100%;height:48px;overflow:visible;}
+.railsvg line{stroke:#A100FF;stroke-width:1.5;stroke-dasharray:6 4;opacity:.6;}
+.raillbls{position:absolute;top:0;left:0;width:100%;height:48px;pointer-events:none;}
+.grid{display:flex;gap:4px;}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.card{border-radius:6px;border:.5px solid #e2d8f0;padding:5px 6px;cursor:pointer;background:#fdfcff;position:relative;transition:background .2s,border-color .2s;}
+.card:hover{border-color:#A100FF;background:#f8f0ff;}
+.card.done-all{background:#F0FDF4 !important;border-color:#86EFAC !important;}
+.card.done-all:hover{background:#dcfce7 !important;}
+.card.crit{border-left:2.5px solid #E24B4A;}
+.card.circ{border-left:2.5px solid #A100FF;}
+.cflag{font-size:7px;font-weight:700;color:#a32d2d;line-height:1.2;margin-bottom:1px;}
+.cflag.c{color:#6d28d9;}
+.cname{font-size:10px;font-weight:600;line-height:1.3;color:#1A0033;}
+.bgs{display:flex;gap:2px;flex-wrap:wrap;margin-top:2px;}
+.bg{font-size:8px;padding:1px 4px;border-radius:4px;white-space:nowrap;line-height:1.5;font-weight:500;}
+.ba{background:#eef2ff;color:#3730a3;}.bm{background:#ecfdf5;color:#065f46;}.bc{background:#fff7ed;color:#92400e;}
+.bl{background:#f3f0ff;color:#5a3a8a;}.bq{background:#f3f0ff;color:#A100FF;}.bn{background:#f5f5f5;color:#9ca3af;}
+.bt{background:#fdf2f8;color:#9d174d;}.br{background:#fef2f2;color:#991b1b;}.bcirc{background:#f5f3ff;color:#6d28d9;border:.5px solid #ddd6fe;}
+.stamps{display:flex;gap:2px;flex-wrap:wrap;margin-top:4px;}
+.stamp{font-size:8px;font-weight:700;padding:1px 5px;border-radius:4px;letter-spacing:.02em;}
+.st-p{background:#F3F4F6;color:#6B7280;}
+.st-i{background:#DBEAFE;color:#1D4ED8;}
+.st-c{background:#DCFCE7;color:#166534;}
+.st-b{background:#FEE2E2;color:#991B1B;}
+.cpath{margin-top:10px;background:linear-gradient(90deg,#1A0033,#3D0080);border-radius:7px;padding:5px 12px;font-size:9px;font-weight:600;color:#fff;text-align:center;line-height:1.4;}
+.cpath b{color:#00C4CC;}
+.rpicker-wrap{display:none;min-height:150px;background:rgba(10,0,40,0.18);border-radius:8px;align-items:center;justify-content:center;margin-top:12px;}
+.rpicker-wrap.open{display:flex;}
+.rpicker{background:#fff;border:1px solid #d8c8ef;border-top:3px solid #A100FF;border-radius:10px;padding:16px 20px;min-width:280px;}
+.rpicker-title{font-size:13px;font-weight:700;color:#1A0033;margin-bottom:4px;}
+.rpicker-sub{font-size:11px;color:#6B7280;margin-bottom:14px;}
+.rp-btns{display:flex;gap:8px;justify-content:center;}
+.rp-btn{flex:1;padding:10px 8px;border-radius:8px;border:1px solid #d8c8ef;background:#fff;font-size:12px;font-weight:700;cursor:pointer;}
+.rp-btn.arg{color:#3730a3;border-color:#c7d2fe;}.rp-btn.arg:hover{background:#eef2ff;}
+.rp-btn.mex{color:#065f46;border-color:#a7f3d0;}.rp-btn.mex:hover{background:#ecfdf5;}
+.rp-btn.cca{color:#92400e;border-color:#fde68a;}.rp-btn.cca:hover{background:#fffbeb;}
+.rp-cancel{width:100%;margin-top:8px;padding:6px;border-radius:6px;border:none;background:#F3F4F6;color:#6B7280;font-size:11px;cursor:pointer;}
+.pout{display:none;margin-top:12px;}
+.pout.open{display:block;}
+.pbox{background:#f8f5ff;border:1px solid #d8c8ef;border-top:3px solid #A100FF;border-radius:12px;padding:15px 18px;}
+.phead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.phl{flex:1;}
+.phl-top{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+.pflag{font-size:8px;font-weight:700;color:#a32d2d;text-transform:uppercase;letter-spacing:.05em;}
+.pflag.c{color:#6d28d9;}
+.preg-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px;}
+.preg-ARG{background:#eef2ff;color:#3730a3;}.preg-MEX{background:#ecfdf5;color:#065f46;}.preg-CCA{background:#fff7ed;color:#92400e;}
+.ptitle{font-size:15px;font-weight:800;color:#1A0033;margin-bottom:5px;}
+.pbgs{display:flex;gap:4px;flex-wrap:wrap;}
+.pbg{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:500;}
+.phr{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.ltog{display:flex;border:1px solid #d8c8ef;border-radius:6px;overflow:hidden;}
+.lb{padding:3px 11px;font-size:10px;font-weight:600;cursor:pointer;background:transparent;border:none;color:#5a3a8a;}
+.lb.on{background:#A100FF;color:#fff;}
+.cx{background:none;border:none;font-size:18px;cursor:pointer;color:#9ca3af;line-height:1;padding:2px 4px;border-radius:4px;}
+.cx:hover{background:#ede8f8;}
+.pbody{display:grid;grid-template-columns:1.8fr 0.9fr 0.9fr 1.2fr;gap:9px;border-top:1px solid #e2d8f0;padding-top:11px;}
+.pc{background:#fff;border:.5px solid #e2d8f0;border-radius:8px;padding:9px 11px;}
+.pch{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.pca{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pcl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#7c5ab8;}
+.pct{font-size:11px;color:#374151;line-height:1.6;}
+.pc-trk{background:#fff;border:1px solid #d8c8ef;border-radius:8px;padding:11px 13px;display:flex;flex-direction:column;gap:7px;}
+.trk-title{font-size:10px;font-weight:700;color:#A100FF;text-transform:uppercase;letter-spacing:.06em;}
+.trk-row{display:flex;flex-direction:column;gap:3px;}
+.trk-lbl{font-size:9px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.04em;}
+.trk-sel{width:100%;padding:5px 7px;border-radius:6px;border:1px solid #d8c8ef;font-size:11px;color:#1A0033;background:#fff;cursor:pointer;}
+.trk-sel:focus{outline:none;border-color:#A100FF;}
+.trk-done{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:5px;padding:5px 8px;font-size:10px;color:#065F46;line-height:1.5;}
+.trk-late{background:#FEF2F2;border:1px solid #FECACA;border-radius:5px;padding:5px 8px;font-size:10px;color:#991B1B;font-weight:600;margin-bottom:6px;}
+.trk-ta{width:100%;padding:6px 8px;border-radius:6px;border:1px solid #d8c8ef;font-size:11px;color:#1A0033;background:#fff;resize:vertical;min-height:52px;font-family:inherit;line-height:1.5;}
+.trk-ta:focus{outline:none;border-color:#A100FF;}
+.save-btn{padding:7px;border-radius:7px;border:none;background:#A100FF;color:#fff;font-size:11px;font-weight:700;cursor:pointer;}
+.save-btn:hover{background:#8500d4;}
+.stor-indicator{font-size:9px;color:#9ca3af;text-align:right;margin-top:2px;}
+.stor-ok{color:#065F46;}
+.stor-err{color:#991B1B;}
+</style>
+
+<div class="wrap">
+<div class="hdr">
+  <div class="htitle">OTC Closing &amp; Reporting — <b>Work Day Timeline</b></div>
+  <div class="hsub">Order-to-Cash · Accounts Receivable · LAR Region (ARG · MEX · CCA) &nbsp;|&nbsp; May – Dec 2026</div>
+  <div class="hleg">
+    <span class="hl"><span class="hldot" style="background:#E24B4A"></span>Critical</span>
+    <span class="hl"><span class="hldot" style="background:#A100FF"></span>Adjustments</span>
+    <span class="hl"><span class="hldot" style="background:#8B5CF6"></span>Controls</span>
+    <span class="hl"><span class="hldot" style="background:#F97316"></span>Packages</span>
+    <span class="hl"><span class="hldot" style="background:#9CA3AF"></span>Regulatory</span>
+    <span class="hl"><span class="hldot" style="background:#F3F4F6;width:10px;height:10px;border-radius:2px;border:1px solid #d1d5db"></span>Not started</span>
+    <span class="hl"><span class="hldot" style="background:#DBEAFE;width:10px;height:10px;border-radius:2px"></span>In Progress</span>
+    <span class="hl"><span class="hldot" style="background:#DCFCE7;width:10px;height:10px;border-radius:2px"></span>Completed</span>
+    <span class="hl"><span class="hldot" style="background:#FEE2E2;width:10px;height:10px;border-radius:2px"></span>Blocked</span>
+    <span class="hl"><span class="hldot" style="background:#F0FDF4;width:10px;height:10px;border-radius:2px;border:1px solid #86EFAC"></span>All done</span>
+  </div>
+</div>
+<div class="body">
+
+<div id="loading-overlay" class="loading-overlay">⏳ Loading saved data...</div>
+<div id="main-content" style="display:none">
+
+<div class="pbar">
+  <div class="pbar-top"><span class="pbar-label">Closing period</span><span class="pbar-current" id="pbar-current">May 2026</span></div>
+  <div class="pbar-btns" id="pbar-btns"></div>
+</div>
+<div class="wdstrip" id="wdstrip"></div>
+<div class="export-bar">
+  <span class="exp-label">Export tracker:</span>
+  <select class="exp-sel" id="exp-sel"><option value="current">Current period only</option><option value="all">All periods</option></select>
+  <button class="exp-btn" id="exp-btn" onclick="doExport()" disabled>⬇ Export to Excel</button>
+  <span class="exp-status" id="exp-status" style="color:#5a3a8a;">Loading export library...</span>
+</div>
+<div style="margin-bottom:9px;">
+  <button class="pb" id="matrix-toggle-btn" onclick="toggleMatrix()" style="padding:4px 14px;font-size:10px;font-weight:700;background:#1A0033;color:#fff;border:none;border-radius:6px;cursor:pointer;">📋 Responsáveis Accenture</button>
+</div>
+<div id="matrix-panel" style="display:none;margin-bottom:10px;background:#f8f5ff;border:1px solid #d0c0ef;border-radius:8px;padding:10px 14px;">
+  <div style="font-size:11px;font-weight:700;color:#1A0033;margin-bottom:8px;">Matriz de Responsáveis Accenture · OTC Close Activities</div>
+  <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:9px;" id="matrix-tbl">
+    <thead><tr style="background:#1A0033;color:#fff;">
+      <th style="padding:4px 8px;text-align:left;">Atividade</th>
+      <th style="padding:4px 8px;text-align:left;">WD</th>
+      <th style="padding:4px 8px;text-align:left;color:#c7d2fe;">ARG</th>
+      <th style="padding:4px 8px;text-align:left;color:#a7f3d0;">MEX</th>
+      <th style="padding:4px 8px;text-align:left;color:#fde68a;">CCA</th>
+    </tr></thead>
+    <tbody id="matrix-tbody"></tbody>
+  </table></div>
+</div>
+<div class="filts">
+  <button class="f on" onclick="setF('all',this)">All</button>
+  <button class="f" onclick="setF('ARG',this)">ARG</button>
+  <button class="f" onclick="setF('MEX',this)">MEX</button>
+  <button class="f" onclick="setF('CCA',this)">CCA</button>
+  <button class="f" onclick="setF('quarterly',this)">Quarterly</button>
+</div>
+<div class="railbox">
+  <svg class="railsvg" id="rsvg">
+    <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 2L8 5L1 8" fill="none" stroke="#A100FF" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+    <line id="rline" x1="0" y1="35" x2="20" y2="35" marker-end="url(#arr)"/>
+    <g id="rdots"></g>
+  </svg>
+  <div id="rlbls" class="raillbls"></div>
+</div>
+
+<div class="grid" id="grid">
+  <div class="col" id="c0">
+    <div class="card crit" data-r="ALL" data-id="allowances" onclick="pickRegion('allowances',this)" style="border-left:2.5px solid #A100FF"><div class="cflag">CRITICAL</div><div class="cname">Allowances (B2B)</div><div class="bgs"><span class="bg br">High impact</span><span class="bg bl">All</span></div><div class="stamps" id="stamps-allowances"></div></div>
+    <div class="card crit" data-r="ALL" data-id="reclass" onclick="pickRegion('reclass',this)" style="border-left:2.5px solid #A100FF"><div class="cflag">CRITICAL</div><div class="cname">Reclassification requests</div><div class="bgs"><span class="bg bl">All</span></div><div class="stamps" id="stamps-reclass"></div></div>
+    <div class="card circ" data-r="ARG" data-id="epr" onclick="pickRegion('epr',this)"><div class="cflag c">TIMING CONFLICT</div><div class="cname">Early Payment Reserve</div><div class="bgs"><span class="bg ba">ARG only</span></div><div class="stamps" id="stamps-epr"></div></div>
+    <div class="card circ" data-r="ARG" data-id="intereses" onclick="pickRegion('intereses',this)"><div class="cflag c">CIRCULAR DEP.</div><div class="cname">Intereses a Devengar</div><div class="bgs"><span class="bg ba">ARG only</span></div><div class="stamps" id="stamps-intereses"></div></div>
+    <div class="card" data-r="ALL" data-id="sales" onclick="pickRegion('sales',this)" style="border-left:2.5px solid #00C4CC"><div class="cname">Sales report download</div><div class="bgs"><span class="bg ba">ARG 12pm</span><span class="bg bm">MEX/CCA WD1</span></div><div class="stamps" id="stamps-sales"></div></div>
+    <div class="card" data-r="ALL" data-id="commissions" onclick="pickRegion('commissions',this)" style="border-left:2.5px solid #00C4CC"><div class="cname">Commissions report</div><div class="bgs"><span class="bg ba">ARG 10am</span><span class="bg bm">MEX/CCA WD1</span></div><div class="stamps" id="stamps-commissions"></div></div>
+    <div class="card" data-r="ALL" data-id="vat" onclick="pickRegion('vat',this)" style="border-left:2.5px solid #00C4CC"><div class="cname">VAT &amp; ISR withholdings</div><div class="bgs"><span class="bg ba">ARG 3pm</span><span class="bg bm">MEX/CCA WD1</span></div><div class="stamps" id="stamps-vat"></div></div>
+    <div class="card" data-r="MEX CCA" data-id="paycomp-mex" onclick="pickRegion('paycomp-mex',this)" style="border-left:2.5px solid #A100FF"><div class="cname">Payment compensations</div><div class="bgs"><span class="bg bm">MEX/CCA 5pm</span></div><div class="stamps" id="stamps-paycomp-mex"></div></div>
+  </div>
+  <div class="col" id="c1">
+    <div class="card crit" data-r="ARG" data-id="paycomp-arg" onclick="pickRegion('paycomp-arg',this)"><div class="cflag">CRITICAL</div><div class="cname">Payment compensations</div><div class="bgs"><span class="bg ba">ARG 12pm</span></div><div class="stamps" id="stamps-paycomp-arg"></div></div>
+    <div class="card crit" data-r="MEX CCA" data-id="aging-mex" onclick="pickRegion('aging-mex',this)"><div class="cflag">CRITICAL</div><div class="cname">AR Aging / FSR QX</div><div class="bgs"><span class="bg bm">MEX/CCA</span></div><div class="stamps" id="stamps-aging-mex"></div></div>
+    <div class="card" data-r="MEX CCA" data-id="lar-mex" onclick="pickRegion('lar-mex',this)"><div class="cname">AR–LAR Past Due Control</div><div class="bgs"><span class="bg bm">MEX/CCA</span></div><div class="stamps" id="stamps-lar-mex"></div></div>
+    <div class="card" data-r="MEX CCA" data-id="pastdue-mex" onclick="pickRegion('pastdue-mex',this)"><div class="cname">Past Due report</div><div class="bgs"><span class="bg bm">MEX/CCA 3pm</span></div><div class="stamps" id="stamps-pastdue-mex"></div></div>
+    <div class="card" data-r="ALL" data-q="1" data-id="baddebt" onclick="pickRegion('baddebt',this)"><div class="cname">Bad Debt report</div><div class="bgs"><span class="bg bq">Quarterly</span><span class="bg bl">All 3pm</span></div><div class="stamps" id="stamps-baddebt"></div></div>
+    <div class="card" data-r="CCA" data-q="1" data-id="superintendencia" onclick="pickRegion('superintendencia',this)"><div class="cname">Superintendencia</div><div class="bgs"><span class="bg bq">Quarterly</span><span class="bg bc">CCA 5pm</span></div><div class="stamps" id="stamps-superintendencia"></div></div>
+  </div>
+  <div class="col" id="c2">
+    <div class="card crit" data-r="ARG" data-id="aging-arg" onclick="pickRegion('aging-arg',this)"><div class="cflag">CRITICAL</div><div class="cname">AR Aging (ARG)</div><div class="bgs"><span class="bg ba">ARG</span></div><div class="stamps" id="stamps-aging-arg"></div></div>
+    <div class="card" data-r="ARG" data-id="lar-arg" onclick="pickRegion('lar-arg',this)"><div class="cname">AR–LAR Past Due Control</div><div class="bgs"><span class="bg ba">ARG</span></div><div class="stamps" id="stamps-lar-arg"></div></div>
+    <div class="card circ" data-r="ARG" data-id="pastdue-arg" onclick="pickRegion('pastdue-arg',this)"><div class="cflag c">CIRCULAR DEP.</div><div class="cname">Past Due report (ARG)</div><div class="bgs"><span class="bg ba">ARG</span><span class="bg bcirc">Circular</span></div><div class="stamps" id="stamps-pastdue-arg"></div></div>
+  </div>
+  <div class="col" id="c3">
+    <div class="card crit" data-r="ALL" data-q="1" data-id="bspackage" onclick="pickRegion('bspackage',this)"><div class="cflag">CRITICAL</div><div class="cname">BS Package</div><div class="bgs"><span class="bg bq">Quarterly</span><span class="bg bl">All regions</span></div><div class="stamps" id="stamps-bspackage"></div></div>
+  </div>
+  <div class="col" id="c4">
+    <div class="card circ" data-r="ALL" data-id="bsc" onclick="pickRegion('bsc',this)"><div class="cflag c">PROPAGATED ERROR</div><div class="cname">BSC – Risk Document</div><div class="bgs"><span class="bg bl">All regions</span></div><div class="stamps" id="stamps-bsc"></div></div>
+  </div>
+  <div class="col" id="c5">
+    <div class="card crit" data-r="ALL" data-q="1" data-id="wdesk" onclick="pickRegion('wdesk',this)"><div class="cflag">CRITICAL</div><div class="cname">Wdesk</div><div class="bgs"><span class="bg bq">Quarterly</span><span class="bg bl">All</span></div><div class="stamps" id="stamps-wdesk"></div></div>
+  </div>
+  <div class="col" id="c6">
+    <div class="card crit" data-r="ALL" data-q="1" data-id="sda" onclick="pickRegion('sda',this)"><div class="cflag">CRITICAL — FINAL</div><div class="cname">SDA Global Package</div><div class="bgs"><span class="bg bq">Quarterly</span><span class="bg bl">All</span></div><div class="stamps" id="stamps-sda"></div></div>
+    <div class="card" data-r="ARG" data-q="1" data-id="fsr" onclick="pickRegion('fsr',this)"><div class="cname">FSR Q4 – TPI</div><div class="bgs"><span class="bg ba">ARG</span><span class="bg bt">MEX TBC</span></div><div class="stamps" id="stamps-fsr"></div></div>
+    <div class="card crit circ" data-r="ARG" data-id="offset" onclick="pickRegion('offset',this)"><div class="cflag c">CIRCULAR DEP.</div><div class="cname">Offset Withholdings</div><div class="bgs"><span class="bg ba">ARG only</span></div><div class="stamps" id="stamps-offset"></div></div>
+  </div>
+  <div class="col" id="c7">
+    <div class="card" data-r="CCA" data-id="dinardad" onclick="pickRegion('dinardad',this)"><div class="cname">Dinardad (Ecuador)</div><div class="bgs"><span class="bg bc">CCA only</span><span class="bg bn">ARG/MEX N/A</span></div><div class="stamps" id="stamps-dinardad"></div></div>
+  </div>
+</div>
+
+<div class="cpath">CRITICAL PATH &nbsp;·&nbsp; <b>Payment compensations → AR Aging → Bad Debt → BS Package (WD4) → Wdesk → SDA Global Package</b></div>
+
+<div class="rpicker-wrap" id="rpicker-wrap">
+  <div class="rpicker">
+    <div class="rpicker-title" id="rp-title">Select region</div>
+    <div class="rpicker-sub">Which region are you updating?</div>
+    <div class="rp-btns" id="rp-btns"></div>
+    <button class="rp-cancel" onclick="document.getElementById('rpicker-wrap').classList.remove('open')">Cancel</button>
+  </div>
+</div>
+
+<div class="pout" id="pout">
+  <div class="pbox">
+    <div class="phead">
+      <div class="phl">
+        <div class="phl-top">
+          <div class="pflag" id="pflag" style="display:none"></div>
+          <div class="preg-badge" id="preg-badge"></div>
+        </div>
+        <div class="ptitle" id="ptitle"></div>
+        <div class="pbgs" id="pbgs"></div>
+      </div>
+      <div class="phr">
+        <div class="ltog"><button class="lb on" id="ben" onclick="setLang('en')">EN</button><button class="lb" id="bes" onclick="setLang('es')">ES</button></div>
+        <button class="cx" onclick="closePopup()">×</button>
+      </div>
+    </div>
+    <div class="pbody">
+      <div class="pc"><div class="pch"><div class="pcl" id="ldesc">Description</div></div><div class="pct" id="pdesc"></div></div>
+      <div class="pc" id="pc-pred"><div class="pch"><div class="pca" style="background:#eef2ff"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M10 7H4M4 7L7 4M4 7L7 10" stroke="#A100FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="pcl" id="lpred">Predecessors</div></div><div class="pct" id="ppred"></div></div>
+      <div class="pc" id="pc-succ"><div class="pch"><div class="pca" style="background:#e0fff8"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M4 7H10M10 7L7 4M10 7L7 10" stroke="#00C4CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="pcl" id="lsucc">Successors</div></div><div class="pct" id="psucc"></div></div>
+      <div class="pc-trk">
+        <div class="trk-title" id="trk-title">Activity Tracker</div>
+        <div class="trk-row">
+          <div class="trk-lbl" id="lbl-own">Responsible</div>
+          <select class="trk-sel" id="sel-owner">
+            <option value="">— Select —</option>
+          </select>
+        </div>
+        <div class="trk-row">
+          <div class="trk-lbl">Status</div>
+          <select class="trk-sel" id="sel-status" onchange="onStatusChange()">
+            <option value="pending">Not Started</option>
+            <option value="inprogress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+        <div id="box-done" style="display:none" class="trk-done"><b id="lbl-done">Completed at:</b> <span id="done-ts"></span></div>
+        <div id="box-late" style="display:none">
+          <div class="trk-late">⚠ <span id="lbl-late">Completed after deadline — justification required</span></div>
+          <div class="trk-row" style="margin-top:4px;">
+            <div class="trk-lbl" id="lbl-reason">Reason</div>
+            <select class="trk-sel" id="sel-reason">
+              <option value="">— Select reason —</option>
+              <option value="internal">Dependency on another internal area</option>
+              <option value="client">Client dependency</option>
+              <option value="insufficient">Established deadline insufficient for timely completion</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="trk-row" style="margin-top:5px;">
+            <div class="trk-lbl" id="lbl-just">Details / Comments</div>
+            <textarea class="trk-ta" id="ta-just" rows="3" placeholder="Describe the details of the delay..."></textarea>
+          </div>
+        </div>
+        <button class="save-btn" id="save-btn" onclick="saveTracker()">Save</button>
+        <div class="stor-indicator" id="stor-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main-content -->
+</div></div>
+
+<script>
+/* ══════════════════════════════════════════
+   PERSISTENT STORAGE LAYER — JSONBin.io
+   BIN ID : 69ea9fb210716a4d5de5e56d
+   All users share the same bin (real-time sync)
+   Key format: {periodKey}_{actId}_{reg}
+   ══════════════════════════════════════════ */
+var JSONBIN_ID  = '69ebde9a856a6821896c8c2e';
+var JSONBIN_KEY = '$2a$10$Y0MOfo.5Ds6/USXqLj1PU.gAqzAMrDPziMrKkA4STv1OhL6ozCuaK';
+var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_ID;
+
+/* Local mirror of the entire bin — fetched on init */
+var _binData = { decisions: {} };
+var _binLoaded = false;
+
+/* ── allOrigins proxy (CORS-safe, works on Accenture network) ──
+   GET  : https://api.allorigins.win/raw?url=<encoded>
+   PUT  : allOrigins only supports GET, so for writes we use
+          a tiny trick — wrap the PUT as a GET to a helper
+          endpoint that forwards it. Since allOrigins doesn't
+          forward PUT, we call JSONBin directly for writes
+          (write CORS is usually allowed; only reads are blocked).
+          If direct PUT also fails we queue locally.          */
+
+async function _fetchBin() {
+  try {
+    /* READ via allOrigins proxy */
+    var target = encodeURIComponent(JSONBIN_URL + '/latest');
+    var proxyUrl = 'https://api.allorigins.win/raw?url=' + target;
+    var r = await fetch(proxyUrl);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    var j = await r.json();
+    _binData = (j && j.decisions !== undefined) ? j : (j.record || { decisions: {} });
+    if (!_binData.decisions) _binData.decisions = {};
+    _binLoaded = true;
+    return true;
+  } catch(e) {
+    console.error('JSONBin fetch error:', e);
+    _binLoaded = false;
+    return false;
+  }
+}
+
+async function _writeBin() {
+  /* Try direct PUT first (write CORS is usually open) */
+  var writeOk = false;
+  try {
+    var r = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY,
+        'X-Bin-Meta': 'false'
+      },
+      body: JSON.stringify(_binData)
+    });
+    writeOk = r.ok;
+  } catch(e) { writeOk = false; }
+
+  /* Fallback: use allOrigins GET trick to trigger a webhook-style write
+     (not supported — queue locally and retry on next open) */
+  if (!writeOk) {
+    try {
+      /* Store pending writes in localStorage so they sync next time */
+      localStorage.setItem('_otc_pending', JSON.stringify(_binData));
+      console.warn('Write queued locally — will retry on next load');
+    } catch(e2) {}
+  }
+  return writeOk;
+}
+
+/* On load: flush any pending local writes */
+async function _flushPending() {
+  try {
+    var pending = localStorage.getItem('_otc_pending');
+    if (!pending) return;
+    var data = JSON.parse(pending);
+    var r = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Meta': 'false' },
+      body: pending
+    });
+    if (r.ok) {
+      localStorage.removeItem('_otc_pending');
+      console.log('Pending writes flushed to JSONBin');
+      _binData = data;
+    }
+  } catch(e) {}
+}
+
+async function storSave(pKey, actId, reg, data) {
+  var key = pKey + '_' + actId + '_' + reg;
+  try {
+    if (!_binLoaded) await _fetchBin();
+    _binData.decisions[key] = data;
+    return await _writeBin();
+  } catch(e) {
+    console.error('storSave error:', e);
+    return false;
+  }
+}
+
+async function storLoad(pKey, actId, reg) {
+  var key = pKey + '_' + actId + '_' + reg;
+  try {
+    return _binData.decisions[key] || null;
+  } catch(e) {
+    return null;
+  }
+}
+
+/* Load all records for a given period into local cache */
+async function loadPeriodIntoCache(pKey, regsMap) {
+  if (!_binLoaded) await _fetchBin();
+  var actIds = Object.keys(regsMap);
+  for (var ai = 0; ai < actIds.length; ai++) {
+    var actId = actIds[ai];
+    var regs = regsMap[actId];
+    for (var ri = 0; ri < regs.length; ri++) {
+      var reg = regs[ri];
+      var rec = await storLoad(pKey, actId, reg);
+      if (rec) {
+        if (!CACHE[pKey]) CACHE[pKey] = {};
+        if (!CACHE[pKey][actId]) CACHE[pKey][actId] = {};
+        CACHE[pKey][actId][reg] = rec;
+      }
+    }
+  }
+}
+
+/* In-memory cache — synced with storage */
+var CACHE = {};
+function cacheGet(pKey, actId, reg) {
+  return (CACHE[pKey] && CACHE[pKey][actId] && CACHE[pKey][actId][reg]) || null;
+}
+function cacheSet(pKey, actId, reg, data) {
+  if (!CACHE[pKey]) CACHE[pKey] = {};
+  if (!CACHE[pKey][actId]) CACHE[pKey][actId] = {};
+  CACHE[pKey][actId][reg] = data;
+}
+
+/* ══════════════════════════════════════════
+   STATIC DATA
+   ══════════════════════════════════════════ */
+var PERIODS=[
+  {label:'May 2026',key:'may26',wds:{WD1:'04/05/2026',WD2:'06/05/2026',WD3:'07/05/2026',WD4:'08/05/2026',WD5:'11/05/2026',WD7:'13/05/2026',WD10:'18/05/2026'},strip:{WD1:['04/05','Mon'],WD2:['06/05','Wed'],WD3:['07/05','Thu'],WD4:['08/05','Fri'],WD5:['11/05','Mon'],WD7:['13/05','Wed'],WD10:['18/05','Mon']},dia10:['10/05','Sun']},
+  {label:'Jun 2026',key:'jun26',wds:{WD1:'01/06/2026',WD2:'02/06/2026',WD3:'03/06/2026',WD4:'04/06/2026',WD5:'05/06/2026',WD7:'09/06/2026',WD10:'12/06/2026'},strip:{WD1:['01/06','Mon'],WD2:['02/06','Tue'],WD3:['03/06','Wed'],WD4:['04/06','Thu'],WD5:['05/06','Fri'],WD7:['09/06','Tue'],WD10:['12/06','Fri']},dia10:['10/06','Wed']},
+  {label:'Jul 2026',key:'jul26',wds:{WD1:'01/07/2026',WD2:'02/07/2026',WD3:'03/07/2026',WD4:'06/07/2026',WD5:'07/07/2026',WD7:'10/07/2026',WD10:'15/07/2026'},strip:{WD1:['01/07','Wed'],WD2:['02/07','Thu'],WD3:['03/07','Fri'],WD4:['06/07','Mon'],WD5:['07/07','Tue'],WD7:['10/07','Fri'],WD10:['15/07','Wed']},dia10:['10/07','Fri']},
+  {label:'Aug 2026',key:'aug26',wds:{WD1:'03/08/2026',WD2:'04/08/2026',WD3:'05/08/2026',WD4:'06/08/2026',WD5:'07/08/2026',WD7:'11/08/2026',WD10:'14/08/2026'},strip:{WD1:['03/08','Mon'],WD2:['04/08','Tue'],WD3:['05/08','Wed'],WD4:['06/08','Thu'],WD5:['07/08','Fri'],WD7:['11/08','Tue'],WD10:['14/08','Fri']},dia10:['10/08','Mon']},
+  {label:'Sep 2026',key:'sep26',wds:{WD1:'01/09/2026',WD2:'02/09/2026',WD3:'03/09/2026',WD4:'04/09/2026',WD5:'07/09/2026',WD7:'09/09/2026',WD10:'14/09/2026'},strip:{WD1:['01/09','Tue'],WD2:['02/09','Wed'],WD3:['03/09','Thu'],WD4:['04/09','Fri'],WD5:['07/09','Mon'],WD7:['09/09','Wed'],WD10:['14/09','Mon']},dia10:['10/09','Thu']},
+  {label:'Oct 2026',key:'oct26',wds:{WD1:'01/10/2026',WD2:'02/10/2026',WD3:'05/10/2026',WD4:'06/10/2026',WD5:'07/10/2026',WD7:'09/10/2026',WD10:'15/10/2026'},strip:{WD1:['01/10','Thu'],WD2:['02/10','Fri'],WD3:['05/10','Mon'],WD4:['06/10','Tue'],WD5:['07/10','Wed'],WD7:['09/10','Fri'],WD10:['15/10','Thu']},dia10:['10/10','Sat']},
+  {label:'Nov 2026',key:'nov26',wds:{WD1:'03/11/2026',WD2:'04/11/2026',WD3:'05/11/2026',WD4:'06/11/2026',WD5:'09/11/2026',WD7:'11/11/2026',WD10:'16/11/2026'},strip:{WD1:['03/11','Tue'],WD2:['04/11','Wed'],WD3:['05/11','Thu'],WD4:['06/11','Fri'],WD5:['09/11','Mon'],WD7:['11/11','Wed'],WD10:['16/11','Mon']},dia10:['10/11','Tue']},
+  {label:'Dec 2026',key:'dec26',wds:{WD1:'01/12/2026',WD2:'02/12/2026',WD3:'03/12/2026',WD4:'04/12/2026',WD5:'07/12/2026',WD7:'09/12/2026',WD10:'15/12/2026'},strip:{WD1:['01/12','Tue'],WD2:['02/12','Wed'],WD3:['03/12','Thu'],WD4:['04/12','Fri'],WD5:['07/12','Mon'],WD7:['09/12','Wed'],WD10:['15/12','Mon']},dia10:['10/12','Thu']}
+];
+var WD_ORDER=['WD1','WD2','WD3','WD4','WD5','WD7','WD10'];
+var WM=[{l:'WD1',c:'#A100FF'},{l:'WD2',c:'#8B5CF6'},{l:'WD3',c:'#8B5CF6'},{l:'WD4',c:'#F97316'},{l:'WD5',c:'#F97316'},{l:'WD7',c:'#F97316'},{l:'WD10',c:'#F97316'},{l:'Dia 10',c:'#9CA3AF'}];
+var ACT_WD={allowances:'WD1',reclass:'WD1',epr:'WD1',intereses:'WD1',sales:'WD1',commissions:'WD1',vat:'WD1','paycomp-mex':'WD1','paycomp-arg':'WD2','aging-mex':'WD2','lar-mex':'WD2','pastdue-mex':'WD2',baddebt:'WD2',superintendencia:'WD2','aging-arg':'WD3','lar-arg':'WD3','pastdue-arg':'WD3',bspackage:'WD4',bsc:'WD5',wdesk:'WD7',sda:'WD10',fsr:'WD10',offset:'WD10',dinardad:'WD10'};
+var ACT_REG={allowances:['ARG','MEX','CCA'],reclass:['ARG','MEX','CCA'],epr:['ARG'],intereses:['ARG'],sales:['ARG','MEX','CCA'],commissions:['ARG','MEX','CCA'],vat:['ARG','MEX','CCA'],'paycomp-mex':['MEX','CCA'],'paycomp-arg':['ARG'],'aging-mex':['MEX','CCA'],'lar-mex':['MEX','CCA'],'pastdue-mex':['MEX','CCA'],baddebt:['ARG','MEX','CCA'],superintendencia:['CCA'],'aging-arg':['ARG'],'lar-arg':['ARG'],'pastdue-arg':['ARG'],bspackage:['ARG','MEX','CCA'],bsc:['ARG','MEX','CCA'],wdesk:['ARG','MEX','CCA'],sda:['ARG','MEX','CCA'],fsr:['ARG'],offset:['ARG'],dinardad:['CCA']};
+var ACT_TITLE={allowances:'Allowances (B2B)',reclass:'Reclassification requests',epr:'Early Payment Reserve',intereses:'Intereses a Devengar',sales:'Sales report download',commissions:'Commissions report',vat:'VAT & ISR withholdings','paycomp-mex':'Payment compensations (MEX/CCA)','paycomp-arg':'Payment compensations (ARG)','aging-mex':'AR Aging / FSR QX (MEX/CCA)','lar-mex':'AR-LAR Past Due Control (MEX/CCA)','pastdue-mex':'Past Due report (MEX/CCA)',baddebt:'Bad Debt report',superintendencia:'Superintendencia','aging-arg':'AR Aging (ARG)','lar-arg':'AR-LAR Past Due Control (ARG)','pastdue-arg':'Past Due report (ARG)',bspackage:'BS Package',bsc:'BSC - Risk Document',wdesk:'Wdesk',sda:'SDA Global Package',fsr:'FSR Q4 - TPI',offset:'Offset Withholdings',dinardad:'Dinardad (Ecuador)'};
+
+/* ── ACCENTURE RESPONSIBLE MATRIX (from Activity Matrix spreadsheet) ── */
+var ACT_OWNERS={
+  allowances:{ARG:'Javier Celaya',MEX:'Todos B2B',CCA:'Jose Maria'},
+  reclass:{ARG:'Todos',MEX:'Todos B2B',CCA:'Jose Maria'},
+  epr:{ARG:'Jhon Pintos'},
+  intereses:{ARG:'Jhon Pintos'},
+  sales:{ARG:'Todos B2B',MEX:'Alberto Perez',CCA:'Jose Maria'},
+  commissions:{ARG:'Todos B2B',MEX:'Alberto Perez',CCA:'Jose Maria'},
+  vat:{ARG:'Melanie Farhi',MEX:'Jesus Cervantes',CCA:'Jose Maria'},
+  'paycomp-mex':{MEX:'Todos B2B',CCA:'Jose Maria'},
+  'paycomp-arg':{ARG:'Rubén Galván'},
+  'aging-mex':{MEX:'Alberto Perez',CCA:'Jose Maria'},
+  'lar-mex':{MEX:'Alberto Perez',CCA:'Jose Maria'},
+  'pastdue-mex':{MEX:'Alberto Perez',CCA:'Jose Maria'},
+  baddebt:{ARG:'Javier Celaya',MEX:'Alberto Perez',CCA:'Jose Maria'},
+  superintendencia:{CCA:'Jose Maria'},
+  'aging-arg':{ARG:'Rubén Galván'},
+  'lar-arg':{ARG:'Rubén Galván'},
+  'pastdue-arg':{ARG:'Rubén Galván'},
+  bspackage:{ARG:'Rubén Galván',MEX:'Alberto Perez',CCA:'Jose Maria'},
+  bsc:{ARG:'Rubén Galván',MEX:'Alberto Perez',CCA:'Jose Maria'},
+  wdesk:{ARG:'Rubén Galván',MEX:'Alberto Perez',CCA:'Jose Maria'},
+  sda:{ARG:'Javier Celaya',MEX:'Alberto Perez',CCA:'Jose Maria'},
+  fsr:{ARG:'Rubén Galván'},
+  offset:{ARG:'Melanie Farhi'},
+  dinardad:{CCA:'Perla Mata'}
+};
+var ALL_OWNERS=['Javier Celaya','Rubén Galván','Melanie Farhi','Jhon Pintos','Alberto Perez','Jesus Cervantes','Monica Montelongo','Elena Hernandez','Norma Bastida','Antonio Nieto','Himanshu Choudhary','Jose Maria','Perla Mata','Todos B2B','Todos'];
+var REASON_LABELS={internal:'Dependency on another internal area',client:'Client dependency',insufficient:'Established deadline insufficient for timely completion',other:'Other',''	:''};
+
+var D={
+  allowances:{flag:'CRITICAL',title:'Allowances (B2B)',bgs:[{t:'High impact',c:'br'},{t:'All regions',c:'bl'}],en:{desc:'Contractual discounts, rebates, and commercial deductions negotiated with B2B clients. Must post before AR Aging and Bad Debt.',pred:'Accrual reversal',succ:'AR Aging, Bad Debt report, BS Package'},es:{desc:'Descuentos contractuales, rebates y deducciones comerciales. Deben registrarse antes del AR Aging y el Bad Debt.',pred:'Reversión de acumulaciones',succ:'AR Aging, Reporte de Bad Debt, BS Package'}},
+  reclass:{flag:'CRITICAL',title:'Reclassification requests',bgs:[{t:'All regions',c:'bl'}],en:{desc:'Corrects transactions posted to the wrong GL account or AR subledger code. Must execute before Payment compensations.',pred:'Accrual reversal',succ:'Payment compensations'},es:{desc:'Corrige transacciones registradas en la cuenta contable incorrecta. Debe ejecutarse antes de las Compensaciones de pagos.',pred:'Reversión de acumulaciones',succ:'Compensaciones de pagos'}},
+  epr:{title:'Early Payment Reserve',bgs:[{t:'ARG only',c:'ba'},{t:'Timing conflict',c:'bcirc'}],en:{desc:'Provision for financial discounts granted to B2B clients who settle invoices before the due date. TIMING CONFLICT: posted WD1 but actual early payment only confirmed at WD2.',pred:'—',succ:'Bad Debt report, BS Package'},es:{desc:'Provisión para descuentos financieros. CONFLICTO DE TIEMPO: se registra en WD1 pero el pago anticipado real solo se confirma en WD2.',pred:'—',succ:'Reporte de Bad Debt, BS Package'}},
+  intereses:{title:'Intereses a Devengar',bgs:[{t:'ARG only',c:'ba'},{t:'Circular dep.',c:'bcirc'}],en:{desc:'Accrual of interest income on overdue receivables. CIRCULAR DEPENDENCY: uses prior period overdue list.',pred:'—',succ:'BS Package'},es:{desc:'Acumulación de ingresos por intereses sobre cuentas por cobrar vencidas. DEPENDENCIA CIRCULAR: usa la lista de vencidos del período anterior.',pred:'—',succ:'BS Package'}},
+  sales:{title:'Sales report download',bgs:[{t:'ARG 12pm',c:'ba'},{t:'MEX/CCA WD1',c:'bm'}],en:{desc:'Extracts GMV, net revenue, and transaction-level data from all marketplace channels.',pred:'—',succ:'Commissions report, VAT & ISR withholdings'},es:{desc:'Extrae GMV, ingresos netos y datos de todos los canales del marketplace.',pred:'—',succ:'Reporte de comisiones, Reporte de retenciones IVA e ISR'}},
+  commissions:{title:'Commissions report',bgs:[{t:'ARG 10am',c:'ba'},{t:'MEX/CCA WD1',c:'bm'}],en:{desc:'Captures commission income: take rates on GMV, advertising revenues, banking commissions, and logistics fees.',pred:'Sales report download',succ:'—'},es:{desc:'Captura los ingresos por comisiones: take rates sobre GMV, ingresos publicitarios, comisiones bancarias y tarifas logísticas.',pred:'Descarga del reporte de ventas',succ:'—'}},
+  vat:{title:'VAT & ISR withholdings report',bgs:[{t:'ARG 3pm',c:'ba'},{t:'MEX/CCA WD1',c:'bm'}],en:{desc:'Captures amounts withheld by MeLi on behalf of sellers: VAT (16% MEX, 21% ARG, varying CCA) and ISR.',pred:'Sales report download',succ:'—'},es:{desc:'Captura los montos retenidos por MeLi en nombre de los vendedores: IVA e ISR.',pred:'Descarga del reporte de ventas',succ:'—'}},
+  'paycomp-mex':{title:'Payment compensations (MEX/CCA)',bgs:[{t:'MEX/CCA 5pm',c:'bm'}],en:{desc:'Cash application: matching incoming payments to open invoices. Bank identification available WD1 for MEX/CCA.',pred:'Bank reconciliation (WD1)',succ:'AR Aging (WD2)'},es:{desc:'Cash application: hacer coincidir los pagos entrantes con facturas abiertas. Identificación bancaria disponible en WD1.',pred:'Conciliación bancaria (WD1)',succ:'AR Aging (WD2)'}},
+  'paycomp-arg':{flag:'CRITICAL',title:'Payment compensations (ARG)',bgs:[{t:'ARG 12pm',c:'ba'}],en:{desc:'ARG executes on WD2 because bank statement identification only finalizes on WD1 (COELSA net settlement cycles).',pred:'Bank reconciliation (WD1 ARG)',succ:'AR Aging (WD3 ARG)'},es:{desc:'ARG ejecuta en WD2 porque la identificación del extracto bancario solo se finaliza en WD1 (ciclos COELSA).',pred:'Conciliación bancaria (WD1 ARG)',succ:'AR Aging (WD3 ARG)'}},
+  'aging-mex':{flag:'CRITICAL',title:'AR Aging / FSR QX (MEX/CCA)',bgs:[{t:'MEX/CCA WD2',c:'bm'}],en:{desc:'Stratifies AR balance by days since invoice due date. Provides base for Bad Debt provision under ECL model.',pred:'Payment compensations (WD1)',succ:'Bad Debt report, BS Package (WD4)'},es:{desc:'Estratifica el saldo de AR por días desde el vencimiento. Proporciona la base para la provisión de Bad Debt bajo el modelo ECL.',pred:'Compensaciones de pagos (WD1)',succ:'Reporte de Bad Debt, BS Package (WD4)'}},
+  'lar-mex':{title:'AR–LAR Past Due Control (MEX/CCA)',bgs:[{t:'MEX/CCA WD2',c:'bm'}],en:{desc:'Categorizes overdue receivables by aging bucket and assigns escalation actions.',pred:'Payment compensations',succ:'BSC – Risk Document (WD5)'},es:{desc:'Categoriza las cuentas por cobrar vencidas y asigna acciones de escalonamiento.',pred:'Compensaciones de pagos',succ:'BSC – Documento de riesgo (WD5)'}},
+  'pastdue-mex':{title:'Past Due report (MEX/CCA)',bgs:[{t:'MEX/CCA 3pm',c:'bm'}],en:{desc:'Formal deliverable calculating total overdue AR with breakdown by client, aging bucket, and segment.',pred:'AR Aging (WD2)',succ:'BSC – Risk Document, Dunning / Collection'},es:{desc:'Entregable formal que calcula el saldo total de AR vencido con desglose por cliente y segmento.',pred:'AR Aging (WD2)',succ:'BSC – Documento de riesgo, Dunning / Cobranza'}},
+  baddebt:{title:'Bad Debt report / Calculation',bgs:[{t:'Quarterly',c:'bq'},{t:'All regions 3pm',c:'bl'}],en:{desc:'Estimates uncollectible AR per IFRS 9 ECL methodology. Quarterly close requires individual assessment and macro-economic adjustments.',pred:'AR Aging, Allowances (B2B), Early Payment Reserve',succ:'BS Package (WD4)'},es:{desc:'Estima el AR incobrable conforme a la metodología ECL de IFRS 9. Requiere evaluación individual y ajustes macroeconómicos.',pred:'AR Aging, Allowances (B2B), Early Payment Reserve',succ:'BS Package (WD4)'}},
+  superintendencia:{title:'Superintendencia (CCA only)',bgs:[{t:'Quarterly',c:'bq'},{t:'CCA 5pm',c:'bc'}],en:{desc:'Regulatory report to the financial supervisory authority, declaring AR balances, credit exposure, impairment provisions, and liquidity ratios.',pred:'—',succ:'—'},es:{desc:'Reporte regulatorio a la Superintendencia de Bancos, declarando saldos de AR, exposición crediticia y provisiones.',pred:'—',succ:'—'}},
+  'aging-arg':{flag:'CRITICAL',title:'AR Aging (ARG)',bgs:[{t:'ARG WD3',c:'ba'}],en:{desc:'ARG AR Aging delivers WD3 — structural 1-day delay vs MEX/CCA caused by WD2 compensation dependency.',pred:'Payment compensations (WD2 ARG)',succ:'Bad Debt report, BS Package (WD4)'},es:{desc:'El AR Aging de ARG entrega en WD3 — retraso estructural de 1 día por la dependencia de compensaciones del WD2.',pred:'Compensaciones de pagos (WD2 ARG)',succ:'Reporte de Bad Debt, BS Package (WD4)'}},
+  'lar-arg':{title:'AR–LAR Past Due Control (ARG)',bgs:[{t:'ARG WD3',c:'ba'}],en:{desc:'Same OTC past due control framework as MEX/CCA, running WD3 due to compensation lag.',pred:'Payment compensations (WD2 ARG)',succ:'BSC – Risk Document (WD5)'},es:{desc:'Mismo marco de control de vencidos OTC que MEX/CCA, ejecutándose en WD3.',pred:'Compensaciones de pagos (WD2 ARG)',succ:'BSC – Documento de riesgo (WD5)'}},
+  'pastdue-arg':{flag:'CIRCULAR DEPENDENCY',fc:1,title:'Past Due report (ARG)',bgs:[{t:'ARG WD3',c:'ba'},{t:'Circular dep.',c:'bcirc'}],en:{desc:'CONFIRMED CIRCULAR DEPENDENCY: Offset Withholdings (WD10) should precede this report but only closes at WD10 — seven work days after WD3. Result: uses GROSS AR.',pred:'AR Aging (WD3 ARG)',succ:'BSC – Risk Document (WD5), Dunning / Collection (ARG)'},es:{desc:'DEPENDENCIA CIRCULAR CONFIRMADA: Offset Withholdings (WD10) debería preceder este reporte pero solo cierra en WD10. Resultado: usa AR BRUTO.',pred:'AR Aging (WD3 ARG)',succ:'BSC – Documento de riesgo (WD5), Dunning / Cobranza (ARG)'}},
+  bspackage:{flag:'CRITICAL',title:'BS Package — all regions',bgs:[{t:'Quarterly',c:'bq'},{t:'WD4 all regions',c:'bl'}],en:{desc:'Quarterly OTC deliverable reconciling the entire AR subledger. Includes gross AR, allowance for doubtful accounts, net AR, TPI accruals, and CTA. Central node: predecessor of Wdesk and SDA Global Package.',pred:'AR Aging, Bad Debt, Allowances, Early Payment Reserve, Intereses a Devengar',succ:'Wdesk (WD7), SDA Global Package (WD10)'},es:{desc:'Entregable trimestral de OTC que reconcilia todo el sublibro de AR. Nodo central: predecesor de Wdesk y SDA Global Package.',pred:'AR Aging, Bad Debt, Allowances, Early Payment Reserve, Intereses a Devengar',succ:'Wdesk (WD7), SDA Global Package (WD10)'}},
+  bsc:{title:'BSC – Risk Document for SSC',bgs:[{t:'All regions WD5',c:'bl'}],en:{desc:'OTC governance report for the Shared Services Center. Quantifies AR credit risk: DSO by region, overdue AR %, concentration risk, provision coverage ratio, and CEI.',pred:'Past Due report, AR–LAR Past Due Control',succ:'—'},es:{desc:'Reporte de gobernanza OTC para el SSC. Cuantifica el riesgo de crédito: DSO por región, % AR vencido, riesgo de concentración y CEI.',pred:'Past Due report, AR–LAR Past Due Control',succ:'—'}},
+  wdesk:{flag:'CRITICAL',title:'Wdesk (Workiva)',bgs:[{t:'Quarterly',c:'bq'},{t:'All regions WD7',c:'bl'}],en:{desc:'Cloud platform for quarterly external disclosure — 10-Q/10-K filings, earnings release support, and SOX control certifications.',pred:'BS Package (WD4)',succ:'SDA Global Package (WD10)'},es:{desc:'Plataforma en la nube para divulgaciones externas trimestrales — presentaciones 10-Q/10-K, soporte para resultados y certificaciones SOX.',pred:'BS Package (WD4)',succ:'SDA Global Package (WD10)'}},
+  sda:{flag:'CRITICAL — FINAL DEADLINE',title:'SDA Global Package',bgs:[{t:'Quarterly',c:'bq'},{t:'All regions WD10',c:'bl'}],en:{desc:'Centralized quarterly consolidation of AR reporting for Sales & Distribution Accounting. Delay in any region blocks global consolidation.',pred:'BS Package (WD4) + Wdesk (WD7) — all 3 regions',succ:'—'},es:{desc:'Consolidación trimestral centralizada del reporte de AR. El retraso en cualquier región bloquea la consolidación global.',pred:'BS Package (WD4) + Wdesk (WD7) — las 3 regiones',succ:'—'}},
+  fsr:{title:'FSR Q4 – TPI (ARG only)',bgs:[{t:'Quarterly',c:'bq'},{t:'ARG WD10',c:'ba'}],en:{desc:'Financial Summary Review for Q4 including Trade and Promotional Income (TPI) reconciliation.',pred:'BS Package, Wdesk',succ:'—'},es:{desc:'Financial Summary Review para Q4 incluyendo reconciliación de TPI.',pred:'BS Package, Wdesk',succ:'—'}},
+  offset:{flag:'CRITICAL — CIRCULAR DEP.',fc:1,title:'Offset Withholdings (ARG only)',bgs:[{t:'ARG WD10',c:'ba'},{t:'Circular dep.',c:'bcirc'}],en:{desc:'Argentine-specific OTC process of netting client-retained tax withholdings against gross invoice amounts. CONFIRMED CIRCULAR DEPENDENCY: should precede Past Due (WD3) but certificates only arrive at WD10.',pred:'Client withholding certificate receipt (external)',succ:'Should precede Past Due report (WD3) — but arrives WD10'},es:{desc:'Proceso OTC de Argentina de compensar las retenciones fiscales. DEPENDENCIA CIRCULAR CONFIRMADA: debería preceder al Past Due (WD3) pero llega en WD10.',pred:'Recepción de certificados de retención (dependencia externa)',succ:'Debería preceder al Past Due report (WD3) — pero llega en WD10'}},
+  dinardad:{title:'Dinardad (CCA — Ecuador only)',bgs:[{t:'Monthly 10th',c:'bc'},{t:'ARG/MEX N/A',c:'bn'}],en:{desc:'Regulatory reporting obligation to Ecuador\'s foreign exchange control authority per the COPFP. Fixed 10th-of-month deadline.',pred:'—',succ:'—'},es:{desc:'Obligación de reporte regulatorio a la autoridad de control cambiario de Ecuador según el COPFP.',pred:'—',succ:'—'}}
+};
+
+var curP=0,CID=null,CREG=null,LANG='en';
+
+/* ── SHEETJS ── */
+(function(){
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload=function(){document.getElementById('exp-btn').disabled=false;document.getElementById('exp-status').textContent='Ready to export';document.getElementById('exp-status').style.color='#065F46';};
+  s.onerror=function(){document.getElementById('exp-status').textContent='Export lib unavailable';document.getElementById('exp-status').style.color='#991B1B';};
+  document.head.appendChild(s);
+})();
+
+/* ── INIT: load all data then show UI ── */
+async function init() {
+  var ov = document.getElementById('loading-overlay');
+  ov.innerHTML = '🔗 Conectando ao banco de dados compartilhado (JSONBin)...';
+  ov.style.color = '#5a3a8a';
+  try {
+    await _flushPending();
+    var connected = await _fetchBin();
+    if (connected) {
+      ov.innerHTML = '✓ Conectado — carregando dados...';
+      ov.style.color = '#065F46';
+    } else {
+      ov.innerHTML = '⚠ Sem conexão — modo local ativo';
+      ov.style.color = '#B45309';
+    }
+    await loadPeriodIntoCache(PERIODS[0].key, ACT_REG);
+    document.getElementById('loading-overlay').style.display='none';
+    document.getElementById('main-content').style.display='block';
+    buildPeriodButtons();
+    renderStrip();
+    buildRail();
+    refreshAllCards();
+    var badge = document.getElementById('_conn_badge') || document.createElement('div');
+    badge.id = '_conn_badge';
+    badge.style.cssText = 'font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:4px;display:inline-block;cursor:'+(connected?'default':'pointer')+';'
+      + (connected ? 'background:rgba(22,163,74,0.2);color:#86efac;' : 'background:rgba(251,191,36,0.25);color:#fde68a;border:1px solid rgba(251,191,36,0.4);');
+    badge.textContent = connected ? '🟢 Dados sincronizados em tempo real' : '🟡 Sem conexão — clique para tentar novamente';
+    if (!connected) {
+      badge.onclick = async function() {
+        badge.textContent = '⏳ Reconectando...';
+        badge.style.color = '#93c5fd';
+        var ok = await _fetchBin();
+        if (ok) {
+          await loadPeriodIntoCache(PERIODS[curP].key, ACT_REG);
+          refreshAllCards();
+          badge.style.cssText = 'font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:4px;display:inline-block;background:rgba(22,163,74,0.2);color:#86efac;';
+          badge.textContent = '🟢 Dados sincronizados em tempo real';
+          badge.onclick = null;
+        } else {
+          badge.textContent = '🟡 Sem conexão — clique para tentar novamente';
+          badge.style.color = '#fde68a';
+        }
+      };
+    }
+    document.querySelector('.hsub').appendChild(badge);
+    for (var i=1;i<PERIODS.length;i++) {
+      await loadPeriodIntoCache(PERIODS[i].key, ACT_REG);
+    }
+  } catch(e) {
+    ov.textContent = '⚠ Erro de conexão — modo local ativo';
+    ov.style.color='#991B1B';
+    setTimeout(function(){
+      document.getElementById('loading-overlay').style.display='none';
+      document.getElementById('main-content').style.display='block';
+      buildPeriodButtons();
+      renderStrip();
+      buildRail();
+    }, 1500);
+  }
+}
+
+function buildPeriodButtons(){
+  var bb=document.getElementById('pbar-btns');
+  bb.innerHTML='';
+  PERIODS.forEach(function(p,i){
+    var btn=document.createElement('button');
+    btn.className='pb'+(i===0?' on':'');
+    btn.textContent=p.label;
+    btn.onclick=(function(idx,b){return function(){
+      document.querySelectorAll('.pb').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');curP=idx;
+      document.getElementById('pbar-current').textContent=PERIODS[idx].label;
+      renderStrip();refreshAllCards();
+    };})(i,btn);
+    bb.appendChild(btn);
+  });
+}
+
+function renderStrip(){
+  var p=PERIODS[curP],s=document.getElementById('wdstrip'),h='';
+  WD_ORDER.forEach(function(wd){h+='<div class="wdi"><div class="wdi-lbl">'+wd+'</div><div class="wdi-date">'+p.strip[wd][0]+'</div><div class="wdi-day">'+p.strip[wd][1]+'</div></div>';});
+  h+='<div class="wdi"><div class="wdi-lbl gray">Dia 10</div><div class="wdi-date">'+p.dia10[0]+'</div><div class="wdi-day">'+p.dia10[1]+'</div></div>';
+  s.innerHTML=h;
+}
+
+function buildRail(){
+  var g=document.getElementById('grid'),rd=document.getElementById('rdots'),rl=document.getElementById('rlbls'),ln=document.getElementById('rline');
+  if(!g)return;
+  var gr=g.getBoundingClientRect(),cs=g.querySelectorAll('.col');
+  rd.innerHTML='';rl.innerHTML='';var pos=[];
+  cs.forEach(function(col,i){
+    if(col.style.visibility==='hidden')return;
+    var r=col.getBoundingClientRect(),cx=r.left-gr.left+r.width/2;pos.push(cx);
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx);c.setAttribute('cy','35');c.setAttribute('r','6');c.setAttribute('fill',WM[i].c);c.setAttribute('stroke','#fff');c.setAttribute('stroke-width','2.5');
+    rd.appendChild(c);
+    var d=document.createElement('div');
+    d.style.cssText='position:absolute;top:1px;left:'+cx+'px;transform:translateX(-50%);font-size:9px;font-weight:700;color:#1A0033;white-space:nowrap;';
+    d.innerHTML='<span style="padding:1px 5px;border-radius:5px;background:#f0eaff;border:0.5px solid #d8c8ef;">'+WM[i].l+'</span>';
+    rl.appendChild(d);
+  });
+  if(pos.length>=2){ln.setAttribute('x1',pos[0]);ln.setAttribute('x2',pos[pos.length-1]+16);}
+}
+setTimeout(function(){if(document.getElementById('main-content').style.display!=='none')buildRail();},400);
+window.addEventListener('resize',function(){setTimeout(buildRail,80);});
+
+/* ── STAMPS & CARD HIGHLIGHT ── */
+var STAMP_CLS={pending:'st-p',inprogress:'st-i',completed:'st-c',blocked:'st-b'};
+var STAMP_LBL={pending:'Not started',inprogress:'In prog.',completed:'Done',blocked:'Blocked'};
+
+function isAllDone(actId){
+  var pKey=PERIODS[curP].key,regs=ACT_REG[actId]||[];
+  return regs.length>0&&regs.every(function(reg){var r=cacheGet(pKey,actId,reg);return r&&r.status==='completed';});
+}
+
+function refreshCard(actId){
+  var pKey=PERIODS[curP].key;
+  var el=document.getElementById('stamps-'+actId);
+  if(!el)return;
+  el.innerHTML='';
+  (ACT_REG[actId]||[]).forEach(function(reg){
+    var rec=cacheGet(pKey,actId,reg);
+    var st=rec&&rec.status?rec.status:'pending';
+    var sp=document.createElement('span');
+    sp.className='stamp '+STAMP_CLS[st];
+    sp.textContent=reg+' · '+STAMP_LBL[st];
+    el.appendChild(sp);
+  });
+  var cardEl=el.closest('.card');
+  if(cardEl){if(isAllDone(actId))cardEl.classList.add('done-all');else cardEl.classList.remove('done-all');}
+}
+
+function refreshAllCards(){Object.keys(ACT_REG).forEach(function(id){refreshCard(id);});}
+
+/* ── DATE HELPERS ── */
+function parseDD(str){if(!str)return null;var p=str.split(' ')[0].split('/');return p.length<3?null:new Date(+p[2],+p[1]-1,+p[0]);}
+function isLate(completedAt,deadline){var c=parseDD(completedAt),d=parseDD(deadline);return c&&d&&c>d;}
+function nowTS(){var n=new Date();return n.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+
+/* ── REGION PICKER ── */
+function pickRegion(actId,cardEl){
+  var r=(cardEl.dataset.r||'ALL').toUpperCase();
+  var avail=r==='ALL'?['ARG','MEX','CCA']:r==='MEX CCA'?['MEX','CCA']:r==='ARG'?['ARG']:r==='MEX'?['MEX']:r==='CCA'?['CCA']:['ARG','MEX','CCA'];
+  if(avail.length===1){openPopup(actId,avail[0]);return;}
+  document.getElementById('rp-title').textContent=ACT_TITLE[actId]||actId;
+  var btns=document.getElementById('rp-btns');btns.innerHTML='';
+  avail.forEach(function(reg){
+    var b=document.createElement('button');b.className='rp-btn '+reg.toLowerCase();b.textContent=reg;
+    b.onclick=function(){document.getElementById('rpicker-wrap').classList.remove('open');openPopup(actId,reg);};
+    btns.appendChild(b);
+  });
+  document.getElementById('rpicker-wrap').classList.add('open');
+  document.getElementById('pout').classList.remove('open');
+}
+
+/* ── OPEN POPUP ── */
+function openPopup(actId,region){
+  CID=actId;CREG=region;LANG='en';
+  /* Populate owner dropdown dynamically from matrix */
+  var ownerSel=document.getElementById('sel-owner');
+  ownerSel.innerHTML='<option value="">— Select —</option>';
+  var regOwners=ACT_OWNERS[actId]||{};
+  var suggested=regOwners[region]||null;
+  if(suggested){
+    var optS=document.createElement('option');
+    optS.value=suggested;optS.textContent='★ '+suggested+' (sugerido)';
+    ownerSel.appendChild(optS);
+  }
+  ALL_OWNERS.forEach(function(n){
+    if(n===suggested)return;
+    var o=document.createElement('option');o.value=n;o.textContent=n;
+    ownerSel.appendChild(o);
+  });
+  document.getElementById('ben').classList.add('on');
+  document.getElementById('bes').classList.remove('on');
+  renderContent();
+  var rec=cacheGet(PERIODS[curP].key,actId,region);
+  fillTracker(rec);
+  document.getElementById('rpicker-wrap').classList.remove('open');
+  document.getElementById('pout').classList.add('open');
+  setTimeout(function(){document.getElementById('pout').scrollIntoView({behavior:'smooth',block:'nearest'});},60);
+}
+
+function renderContent(){
+  var d=D[CID];if(!d)return;var lg=d[LANG];
+  var pf=document.getElementById('pflag');
+  if(d.flag){pf.textContent=d.flag;pf.className='pflag'+(d.fc?' c':'');pf.style.display='block';}else pf.style.display='none';
+  var rb=document.getElementById('preg-badge');rb.textContent=CREG;rb.className='preg-badge preg-'+CREG;
+  document.getElementById('ptitle').textContent=d.title;
+  document.getElementById('pbgs').innerHTML=(d.bgs||[]).map(function(b){return'<span class="pbg bg '+b.c+'">'+b.t+'</span>';}).join('');
+  var isEs=LANG==='es';
+  document.getElementById('ldesc').textContent=isEs?'Descripción':'Description';
+  document.getElementById('lpred').textContent=isEs?'Predecesores':'Predecessors';
+  document.getElementById('lsucc').textContent=isEs?'Sucesores':'Successors';
+  document.getElementById('trk-title').textContent=isEs?'Seguimiento':'Activity Tracker';
+  document.getElementById('lbl-own').textContent=isEs?'Responsable':'Responsible';
+  document.getElementById('lbl-done').textContent=isEs?'Completado el:':'Completed at:';
+  document.getElementById('lbl-late').textContent=isEs?'Completado después del plazo — justificación requerida':'Completed after deadline — justification required';
+  document.getElementById('lbl-reason').textContent=isEs?'Motivo':'Reason';
+  document.getElementById('lbl-just').textContent=isEs?'Detalles / Comentarios':'Details / Comments';
+  document.getElementById('ta-just').placeholder=isEs?'Describa los detalles del retraso...':'Describe the details of the delay...';
+  document.getElementById('save-btn').textContent=isEs?'Guardar':'Save';
+  var ss=document.getElementById('sel-status');
+  var eL=['Not Started','In Progress','Completed','Blocked'],sL=['No iniciado','En progreso','Completado','Bloqueado'];
+  for(var i=0;i<ss.options.length;i++)ss.options[i].text=isEs?sL[i]:eL[i];
+  var sr=document.getElementById('sel-reason');
+  var eR=['— Select reason —','Dependency on another internal area','Client dependency','Established deadline insufficient for timely completion','Other'];
+  var sR=['— Seleccionar motivo —','Dependencia de otra área interna','Dependencia del cliente','Plazo establecido insuficiente para conclusión en tiempo','Otros'];
+  for(var j=0;j<sr.options.length;j++)sr.options[j].text=isEs?sR[j]:eR[j];
+  /* Show suggested responsible */
+  var _oi=document.getElementById('_owner_info');
+  if(!_oi){_oi=document.createElement('div');_oi.id='_owner_info';
+    _oi.style.cssText='font-size:10px;font-weight:600;color:#A100FF;margin-top:6px;padding:4px 8px;background:#f5f0ff;border-radius:5px;border:1px solid #e0d0ff;';
+    document.getElementById('pdesc').parentNode.appendChild(_oi);}
+  var _sug=(ACT_OWNERS[CID]||{})[CREG];
+  _oi.textContent=(LANG==='es'?'👤 Responsável: ':'👤 Responsible: ')+(_sug||'—');
+  _oi.style.display=_sug?'block':'none';
+  document.getElementById('pdesc').textContent=lg.desc;
+  var ep=document.getElementById('pc-pred'),esEl=document.getElementById('pc-succ');
+  if(lg.pred&&lg.pred!=='—'){document.getElementById('ppred').textContent=lg.pred;ep.style.display='block';}else ep.style.display='none';
+  if(lg.succ&&lg.succ!=='—'){document.getElementById('psucc').textContent=lg.succ;esEl.style.display='block';}else esEl.style.display='none';
+}
+
+function showLateBlock(show){document.getElementById('box-late').style.display=show?'block':'none';}
+
+function fillTracker(rec){
+  var _savedOwner=rec&&rec.owner?rec.owner:'';
+  if(!_savedOwner){var _ro=ACT_OWNERS[CID]||{};_savedOwner=_ro[CREG]||'';}
+  document.getElementById('sel-owner').value=_savedOwner;
+  document.getElementById('sel-status').value=rec&&rec.status?rec.status:'pending';
+  var tsEl=document.getElementById('done-ts');
+  document.getElementById('box-done').style.display='none';
+  showLateBlock(false);
+  delete tsEl.dataset.ts;
+  document.getElementById('sel-reason').value='';
+  document.getElementById('ta-just').value='';
+  if(rec&&rec.status==='completed'&&rec.completedAt){
+    tsEl.textContent=rec.completedAt;tsEl.dataset.ts=rec.completedAt;
+    document.getElementById('box-done').style.display='block';
+    var dl=PERIODS[curP].wds[ACT_WD[CID]||'WD1']||'';
+    if(isLate(rec.completedAt,dl)){
+      showLateBlock(true);
+      document.getElementById('sel-reason').value=rec.lateReason||'';
+      document.getElementById('ta-just').value=rec.justification||'';
+    }
+  }
+}
+
+function onStatusChange(){
+  var st=document.getElementById('sel-status').value;
+  var tsEl=document.getElementById('done-ts');
+  document.getElementById('box-done').style.display='none';
+  showLateBlock(false);
+  delete tsEl.dataset.ts;
+  if(st==='completed'){
+    var ts=tsEl.dataset&&tsEl.dataset.ts?tsEl.dataset.ts:nowTS();
+    tsEl.textContent=ts;tsEl.dataset.ts=ts;
+    document.getElementById('box-done').style.display='block';
+    var dl=PERIODS[curP].wds[ACT_WD[CID]||'WD1']||'';
+    if(isLate(ts,dl))showLateBlock(true);
+  }
+}
+
+async function saveTracker(){
+  if(!CID||!CREG)return;
+  var btn=document.getElementById('save-btn'),isEs=LANG==='es';
+  var ind=document.getElementById('stor-indicator');
+  btn.textContent=isEs?'Salvando...':'Saving...';btn.disabled=true;
+  var owner=document.getElementById('sel-owner').value;
+  var status=document.getElementById('sel-status').value;
+  var tsEl=document.getElementById('done-ts');
+  var completedAt='';
+  if(status==='completed'){
+    var ts=tsEl.dataset&&tsEl.dataset.ts?tsEl.dataset.ts:nowTS();
+    completedAt=ts;tsEl.textContent=ts;tsEl.dataset.ts=ts;
+    document.getElementById('box-done').style.display='block';
+  }
+  var wd=ACT_WD[CID]||'WD1',dl=PERIODS[curP].wds[wd]||'';
+  var late=status==='completed'&&completedAt?isLate(completedAt,dl):false;
+  var onTime=status==='completed'&&completedAt?(late?'Late':'On Time'):'';
+  var lateReason=late?document.getElementById('sel-reason').value:'';
+  var justification=late?document.getElementById('ta-just').value.trim():'';
+  var rec={owner:owner,status:status,completedAt:completedAt,onTime:onTime,lateReason:lateReason,justification:justification,period:PERIODS[curP].label,region:CREG,actId:CID,actTitle:ACT_TITLE[CID]||CID,wd:wd,deadline:dl,savedAt:new Date().toISOString()};
+
+  /* Save to persistent storage AND local cache */
+  cacheSet(PERIODS[curP].key,CID,CREG,rec);
+  var ok = await storSave(PERIODS[curP].key,CID,CREG,rec);
+
+  refreshCard(CID);
+  btn.disabled=false;
+  if(ok){
+    btn.textContent=isEs?'✓ Guardado!':'✓ Saved!';btn.style.background='#16a34a';
+    ind.textContent='✓ Saved to shared storage';ind.className='stor-indicator stor-ok';
+  } else {
+    btn.textContent=isEs?'⚠ Guardado local':'⚠ Saved locally';btn.style.background='#F0B429';
+    ind.textContent='⚠ Storage unavailable — data saved in session only';ind.className='stor-indicator stor-err';
+  }
+  setTimeout(function(){btn.textContent=isEs?'Guardar':'Save';btn.style.background='#A100FF';ind.textContent='';},2500);
+}
+
+function setLang(l){LANG=l;document.getElementById('ben').classList.toggle('on',l==='en');document.getElementById('bes').classList.toggle('on',l==='es');renderContent();}
+function closePopup(){document.getElementById('pout').classList.remove('open');}
+
+var COLS=['c0','c1','c2','c3','c4','c5','c6','c7'];
+function setF(type,el){
+  document.querySelectorAll('.f').forEach(function(f){f.classList.remove('on');});el.classList.add('on');
+  document.querySelectorAll('.card').forEach(function(card){
+    var r=(card.dataset.r||'').toUpperCase(),show=true;
+    if(type==='ARG')show=r.indexOf('ARG')>=0||r==='ALL';
+    else if(type==='MEX')show=r.indexOf('MEX')>=0||r==='ALL';
+    else if(type==='CCA')show=r.indexOf('CCA')>=0||r==='ALL';
+    else if(type==='quarterly')show=card.dataset.q==='1';
+    card.style.display=show?'':'none';
+  });
+  COLS.forEach(function(id){var col=document.getElementById(id),has=false;col.querySelectorAll('.card').forEach(function(c){if(c.style.display!=='none')has=true;});col.style.visibility=has?'':'hidden';});
+  setTimeout(buildRail,60);
+}
+
+/* ── EXCEL EXPORT ── */
+function doExport(){
+  if(typeof XLSX==='undefined'){alert('Export library not loaded yet.');return;}
+  var statEl=document.getElementById('exp-status');
+  statEl.style.color='#5a3a8a';statEl.textContent='Generating...';
+  var mode=document.getElementById('exp-sel').value;
+  var periodsToExport=mode==='all'?PERIODS:[PERIODS[curP]];
+  var wsData=[['Period','Activity','Region','WD','Deadline Date','Responsible','Status','Completed At','On Time?','Late Reason','Details / Comments']];
+  periodsToExport.forEach(function(per){
+    Object.keys(ACT_REG).forEach(function(actId){
+      var wd=ACT_WD[actId]||'WD1',dl=per.wds[wd]||'';
+      ACT_REG[actId].forEach(function(reg){
+        var rec=cacheGet(per.key,actId,reg);
+        var status=rec&&rec.status?rec.status:'pending';
+        var completedAt=rec&&rec.completedAt?rec.completedAt:'';
+        var onTime=rec&&rec.onTime?rec.onTime:'';
+        var lateReason=rec&&rec.lateReason?REASON_LABELS[rec.lateReason]||rec.lateReason:'';
+        var justification=rec&&rec.justification?rec.justification:'';
+        var statusLabel={pending:'Not Started',inprogress:'In Progress',completed:'Completed',blocked:'Blocked'}[status]||status;
+        wsData.push([per.label,ACT_TITLE[actId]||actId,reg,wd,dl,rec&&rec.owner?rec.owner:'',statusLabel,completedAt,onTime,lateReason,justification]);
+      });
+    });
+  });
+  try{
+    var wb=XLSX.utils.book_new();
+    var ws=XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols']=[{wch:14},{wch:36},{wch:8},{wch:6},{wch:16},{wch:22},{wch:13},{wch:18},{wch:10},{wch:36},{wch:40}];
+    var range=XLSX.utils.decode_range(ws['!ref']);
+    for(var C=0;C<=10;C++){var ha=XLSX.utils.encode_cell({r:0,c:C});if(ws[ha])ws[ha].s={font:{bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'1A0033'}},alignment:{horizontal:'center'}};}
+    for(var R=1;R<=range.e.r;R++){
+      var otA=XLSX.utils.encode_cell({r:R,c:8});
+      if(!ws[otA])continue;
+      if(ws[otA].v==='On Time')ws[otA].s={font:{bold:true,color:{rgb:'166534'}},fill:{fgColor:{rgb:'DCFCE7'}},alignment:{horizontal:'center'}};
+      else if(ws[otA].v==='Late')ws[otA].s={font:{bold:true,color:{rgb:'991B1B'}},fill:{fgColor:{rgb:'FEE2E2'}},alignment:{horizontal:'center'}};
+    }
+    XLSX.utils.book_append_sheet(wb,ws,'OTC Tracker');
+    var fname='OTC_Tracker_'+(mode==='all'?'All_Periods':PERIODS[curP].label.replace(/ /g,'_'))+'.xlsx';
+    XLSX.writeFile(wb,fname);
+    statEl.style.color='#065F46';statEl.textContent='✓ Downloaded: '+fname;
+  }catch(e){statEl.style.color='#991B1B';statEl.textContent='Error: '+e.message;}
+}
+
+/* START */
+init();
+
+function toggleMatrix(){
+  var p=document.getElementById('matrix-panel');
+  var btn=document.getElementById('matrix-toggle-btn');
+  var show=p.style.display==='none';
+  p.style.display=show?'block':'none';
+  btn.style.background=show?'#A100FF':'#1A0033';
+  if(show&&!p.dataset.built){
+    p.dataset.built='1';
+    var tbody=document.getElementById('matrix-tbody');
+    var rows=[
+      ['Allowances (B2B)','allowances'],['Reclassification','reclass'],
+      ['Early Payment Reserve','epr'],['Intereses a Devengar','intereses'],
+      ['Sales report','sales'],['Commissions report','commissions'],
+      ['VAT & ISR withholdings','vat'],['Payment comp. MEX/CCA','paycomp-mex'],
+      ['Payment comp. ARG','paycomp-arg'],['AR Aging MEX/CCA','aging-mex'],
+      ['AR-LAR Past Due MEX/CCA','lar-mex'],['Past Due MEX/CCA','pastdue-mex'],
+      ['Bad Debt report','baddebt'],['Superintendencia','superintendencia'],
+      ['AR Aging ARG','aging-arg'],['AR-LAR Past Due ARG','lar-arg'],
+      ['Past Due ARG','pastdue-arg'],['BS Package','bspackage'],
+      ['BSC - Risk Document','bsc'],['Wdesk','wdesk'],
+      ['SDA Global Package','sda'],['FSR Q4 - TPI','fsr'],
+      ['Offset Withholdings','offset'],['Dinardad (Ecuador)','dinardad']
+    ];
+    var wdColors={'WD1':'#A100FF','WD2':'#8B5CF6','WD3':'#8B5CF6','WD4':'#F97316','WD5':'#F97316','WD7':'#F59E0B','WD10':'#E24B4A'};
+    rows.forEach(function(r,i){
+      var tr=document.createElement('tr');
+      tr.style.background=i%2===0?'#fff':'#f9f6ff';
+      var o=ACT_OWNERS[r[1]]||{};
+      var wd=ACT_WD[r[1]]||'WD1';
+      var wc=wdColors[wd]||'#999';
+      tr.innerHTML='<td style="padding:4px 8px;font-weight:600;color:#1A0033;">'+r[0]+'</td>'
+        +'<td style="padding:4px 8px;"><span style="font-weight:700;color:'+wc+';">'+wd+'</span></td>'
+        +'<td style="padding:4px 8px;color:#3730a3;">'+(o.ARG||'<span style="color:#ccc;">—</span>')+'</td>'
+        +'<td style="padding:4px 8px;color:#065f46;">'+(o.MEX||'<span style="color:#ccc;">—</span>')+'</td>'
+        +'<td style="padding:4px 8px;color:#92400e;">'+(o.CCA||'<span style="color:#ccc;">—</span>')+'</td>';
+      tbody.appendChild(tr);
+    });
+  }
+}
+</script>
